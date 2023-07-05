@@ -1,0 +1,12 @@
+#How to run docker with opengl support https://github.com/AuroAi/carla_apollo_bridge/issues/30
+#How to add xhost for docker to access https://askubuntu.com/questions/1201103/docker-x11-fails-to-open-display
+#Exact command to run docker with opengl support
+docker run -it  --name=azuregl --privileged  -v /tmp/.X11-unix:/tmp/.X11-unix:rw -v /usr/lib/nvidia:/usr/lib/nvidia --device /dev/dri --rm -e __NV_PRIME_RENDER_OFFLOAD=1 -e __GLX_VENDOR_LIBRARY_NAME=nvidia -e DISPLAY=$DISPLAY  -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=all --gpus=all --name=carla-server --net=host -d nvidia-azure-env
+
+##If you are using vscode then add this to your settings.json
+## "docker.commands.run": "${containerCommand} run --privileged  -v /tmp/.X11-unix:/tmp/.X11-unix:rw -v /usr/lib/nvidia:/usr/lib/nvidia --device /dev/dri -e __NV_PRIME_RENDER_OFFLOAD=1 -e __GLX_VENDOR_LIBRARY_NAME=nvidia -e DISPLAY=$DISPLAY  -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=all --gpus=all --name=carla-server --net=host --rm -d ${exposedPorts} ${tag}"
+
+# Before you run any container from terminal or docker extensions from the vscode you need to do this after every machine restart
+# Open your terminal and do the following steps to allow X server connection
+# xhost +Local:*
+# xhost(optional step to only verify if LOCAL: is added to xhost list)

@@ -167,30 +167,40 @@ void FrameConverter::setFileNameConventions(
 
 void FrameConverter::extract()
 {
+    unsigned int dropped_frames = 0;
     std::experimental::filesystem::path rgbPath;
     std::experimental::filesystem::path depthPath;
     k4a_playback_t handle = this->_getHandle();
     FrameAligner faimgs = FrameAligner(handle);
     FrameResult *resultPTR = faimgs.getAlignedFrame(handle, this->_format, false);
-    ProgressBar p = ProgressBar(this->_totalFrames, 50, "#");
-    p.setHeaderAndFooter("Extraction and Alignment: " + this->_mkvPath, "So far, so good");
+    ProgressBar p(this->_totalFrames-1, 25, "#");
+    p.setHeader("Extract and align: {" + this->_mkvPath+"} ");
     while (resultPTR->hasNextFrame == K4A_STREAM_RESULT_SUCCEEDED)
     {
+        std::stringstream footer;
         if (resultPTR->isValidFrame)
         {
             this->_save(resultPTR);
         }
+        else{
+            dropped_frames += 1;
+        }
         rgbPath = this->_getFileName(this->_rgbDirectory, resultPTR->nextFrameIndex(), this->_prefixRGB, this->_suffixRGB);
         depthPath = this->_getFileName(this->_depthDirectory, resultPTR->nextFrameIndex(), this->_prefixDEPTH, this->_suffixDEPTH);
         resultPTR = faimgs.getAlignedFrame(handle, this->_format, this->_fileExists(rgbPath) && this->_fileExists(depthPath));
+
+        footer << "[Processed Frames: "<< resultPTR->frameIndex << "/" << this->_totalFrames << " <Dropped: "<<std::to_string(dropped_frames)<<" Frames>]";
+        p.setFooter(footer.str());
         p.update(resultPTR->frameIndex);
-        if(resultPTR->hasNextFrame == K4A_STREAM_RESULT_EOF){
+        if(resultPTR->hasNextFrame == K4A_STREAM_RESULT_EOF || resultPTR->nextFrameIndex() >= this->_totalFrames){
             break;
         }
+        // std::cout << resultPTR->hasNextFrame << std::endl;
         // if(resultPTR->isValidFrame && (resultPTR->frameIndex >= 5)){//For debugging purposes only
         //     break;
         // }
     }
+    p.finish();
     std::cout << "FINISHED PROCSESING ALL FRAMES " << std::endl;
     k4a_playback_close(handle);
 }

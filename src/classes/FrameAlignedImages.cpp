@@ -153,8 +153,11 @@ FrameResult* FrameAligner::getAlignedFrame(k4a_playback_t handle, const unsigned
     if(result == K4A_STREAM_RESULT_SUCCEEDED && !skipFrameProcessing){
         this->_capturedImageSet(handle, capture, this->_frameResult, format);   
     }    
+    if(result == K4A_STREAM_RESULT_EOF){
+        std::cout << "END OF STREAM REACHED " << std::endl;
+    }
     this->_frameResult->hasNextFrame = result;
-    this->_frameResult->isValidFrame = this->_frameResult->rgb && this->_frameResult->depth;
+    this->_frameResult->isValidFrame = (this->_frameResult->rgb && this->_frameResult->depth) || skipFrameProcessing;
     this->_frameResult->frameIndex++;
     k4a_capture_release(capture);
     return this->_frameResult;

@@ -40,11 +40,13 @@ add_library(argparse SHARED
 # file(GLOB_RECURSE ARGPARSE_CLASSES argparse/src/*.cpp)
 
 file(GLOB_RECURSE HEADERS src/headers/*.h)
+file(GLOB_RECURSE HEADERS src/headers/*.hpp)
 file(GLOB_RECURSE CLASSES src/classes/*.cpp)
 
 add_executable(AzureConverter ${CLASSES} src/kinect.cpp)
 
 target_include_directories(AzureConverter PUBLIC src/headers)
+# target_include_directories(AzureConverter PUBLIC src/headers/indicators)
 
 target_link_libraries(AzureConverter argparse)
 target_link_libraries(AzureConverter k4a::k4a)
