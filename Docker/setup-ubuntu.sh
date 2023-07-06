@@ -83,7 +83,18 @@ fi
 
 apt-get install -y --no-install-recommends ${packages[@]}
 
-# Set the locale
+
+########### INSTALLATION OF KINECT SDK AND DEPENDENCIES ################
+
+apt-get install -y --no-install-recommends gnupg2:$arch
+apt-get install -y --no-install-recommends curl:$arch
+apt-get update
+
+curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+
+apt install -y k4a-tools:$arch libk4a1.4:$arch libk4a1.4-dev:$arch
+
+# Set the locale for the library to show a beautiful progressbar while converting video frames
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
     locale-gen
 ENV LANG en_US.UTF-8  
