@@ -28,6 +28,9 @@ class FrameConverter{
         std::string _prefixDEPTH;              
         std::string _suffixDEPTH;
 
+        cv::Vec2i _depthResolution;
+        cv::Vec2i _colorResolution;
+
     private:
         k4a_playback_t _getHandle();
         void _save(FrameResult* fr);
