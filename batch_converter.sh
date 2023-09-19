@@ -1,12 +1,15 @@
 #!/bin/bash
 cd build
 search_dir=../captures/
+FORMAT=$1
+echo $FORMAT
+exit
 for videopath in "$search_dir"/*
 do
     filename="$(basename ${videopath%.*})"
     rgbdir=${filename}/RGB
     depthdir=${filename}/DEPTH
-    command="./AzureConverter -vpath ${videopath} -format 2 --depthdir ${depthdir} --rgbdir ${rgbdir}"
+    command="./AzureConverter -vpath ${videopath} -format ${FORMAT} --depthdir ${depthdir} --rgbdir ${rgbdir}"
     tarcommand="tar -cvzf ./${filename}.tar.gz ./${filename}"
     echo "$filename"
     echo "$rgbdir"
