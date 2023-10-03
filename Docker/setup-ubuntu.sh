@@ -94,6 +94,3 @@ curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
 
 apt install -y k4a-tools:$arch libk4a1.4:$arch libk4a1.4-dev:$arch
 
-# Set the locale for the library to show a beautiful progressbar while converting video frames
-sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
-    locale-gen
