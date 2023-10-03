@@ -92,9 +92,9 @@ apt-get update
 
 curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
 
-echo 'libk4a1.4 libk4a1.4/accepted-eula-hash string 0f5d5c5de396e4fee4c0753a21fee0c1ed726cf0316204edda484f08cb266d76' | sudo debconf-set-selections
+echo 'libk4a1.4 libk4a1.4/accepted-eula-hash string 0f5d5c5de396e4fee4c0753a21fee0c1ed726cf0316204edda484f08cb266d76' |  debconf-set-selections
 
-echo 'libk4a1.4 libk4a1.4/accept-eula boolean true' | sudo debconf-set-selections
+echo 'libk4a1.4 libk4a1.4/accept-eula boolean true' |  debconf-set-selections
 
 apt install -y k4a-tools:$arch libk4a1.4:$arch libk4a1.4-dev:$arch
 
