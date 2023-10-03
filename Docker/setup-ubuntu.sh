@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -eo pipefail
 # Usage:
 # ./setup-ubuntu.sh [arm64 | amd64]
 
