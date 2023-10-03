@@ -4,6 +4,7 @@ ARG UBUNTU_VERSION=18.04
 FROM nvidia/opengl:base-ubuntu18.04
 
 ############THE PERMISSION DENIED ERROR SOLUTION : https://phoenixnap.com/kb/docker-permission-denied
+ARG DEBIAN_FRONTEND=noninteractive
 
 # Set the working directory to /app
 WORKDIR /app
