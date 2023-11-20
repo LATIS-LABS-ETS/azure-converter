@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -eo pipefail
 # Usage:
 # ./setup-ubuntu.sh [arm64 | amd64]
 
@@ -33,7 +33,7 @@ dpkg --add-architecture amd64
 dpkg --add-architecture arm64
 
 apt-get update
-#########ADDED MOIRE PACKAGES AT THE END BASED ON https://github.com/rirlswift/vscode-opengl-issue/blob/master/Dockerfile for OPENGL##########################
+#########ADDED MORE PACKAGES AT THE END BASED ON https://github.com/rirlswift/vscode-opengl-issue/blob/master/Dockerfile for OPENGL##########################
 packages=(\
     gcc-aarch64-linux-gnu \
     g++-aarch64-linux-gnu \
@@ -92,11 +92,9 @@ apt-get update
 
 curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
 
+echo 'libk4a1.4 libk4a1.4/accepted-eula-hash string 0f5d5c5de396e4fee4c0753a21fee0c1ed726cf0316204edda484f08cb266d76' |  debconf-set-selections
+
+echo 'libk4a1.4 libk4a1.4/accept-eula boolean true' |  debconf-set-selections
+
 apt install -y k4a-tools:$arch libk4a1.4:$arch libk4a1.4-dev:$arch
 
-# Set the locale for the library to show a beautiful progressbar while converting video frames
-RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
-    locale-gen
-ENV LANG en_US.UTF-8  
-ENV LANGUAGE en_US:en  
-ENV LC_ALL en_US.UTF-8  
