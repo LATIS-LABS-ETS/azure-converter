@@ -281,21 +281,26 @@ void FrameConverter::extract()
     p.setHeader("Extract and align: {" + subpath + "} ");
     while (resultPTR->hasNextFrame == K4A_STREAM_RESULT_SUCCEEDED)
     {
-        std::stringstream footer;
+         std::stringstream footer;
+        // if (resultPTR->isValidFrame)
+        // {
+        //     this->_save(resultPTR);
+        // }
+        // else
+        // {
+        //     dropped_frames += 1;
+        // }
         if (!resultPTR->isValidFrame)
         {
             dropped_frames += 1;
         }
-        // this->_save(resultPTR);
+        this->_save(resultPTR);
 
         rgbPath = this->_getFileName(this->_rgbDirectory, resultPTR->nextFrameIndex(), this->_prefixRGB, this->_suffixRGB);
         depthPath = this->_getFileName(this->_depthDirectory, resultPTR->nextFrameIndex(), this->_prefixDEPTH, this->_suffixDEPTH);
-        // std::cout<<"Frame already exists? "<< this->_fileExists(rgbPath)<<", DEPTH? "<< this->_fileExists(depthPath) << std::endl;
         resultPTR = faimgs.getAlignedFrame(handle, this->_format, this->_fileExists(rgbPath) && this->_fileExists(depthPath));
-        if(!(this->_fileExists(rgbPath) && this->_fileExists(depthPath))){
-            this->_save(resultPTR);
-        }        
-        footer << "[Extracted : <" << resultPTR->frameIndex << "/" << this->_totalFrames << ">, Dropped: <" << std::to_string(dropped_frames)<< "/" << this->_totalFrames << ">]";
+
+        footer << "[Processed Frames: " << resultPTR->frameIndex << "/" << this->_totalFrames << " <Dropped: " << std::to_string(dropped_frames) << " Frames>]";
         p.setFooter(footer.str());
         p.update(resultPTR->frameIndex);
         if (resultPTR->hasNextFrame == K4A_STREAM_RESULT_EOF || resultPTR->nextFrameIndex() >= this->_totalFrames)
