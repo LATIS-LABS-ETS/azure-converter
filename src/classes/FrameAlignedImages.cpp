@@ -157,7 +157,7 @@ FrameResult* FrameAligner::getAlignedFrame(k4a_playback_t handle, const unsigned
         std::cout << "END OF STREAM REACHED " << std::endl;
     }
     this->_frameResult->hasNextFrame = result;
-    this->_frameResult->isValidFrame = (this->_frameResult->rgb && this->_frameResult->depth) || skipFrameProcessing;
+    this->_frameResult->isValidFrame = (this->_frameResult->rgb != NULL && this->_frameResult->depth != NULL);// || skipFrameProcessing;
     this->_frameResult->frameIndex++;
     k4a_capture_release(capture);
     return this->_frameResult;

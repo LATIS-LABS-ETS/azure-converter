@@ -1,9 +1,9 @@
 #!/bin/bash
 cd build
-search_dir=../captures/
+search_dir=/home/ramsri00/work_data/INPUT_VIDEOS/SPECIFIC-ADULTS-TEST/
 FORMAT=$1
-echo $FORMAT
-exit
+#echo $FORMAT
+#exit
 for videopath in "$search_dir"/*
 do
     filename="$(basename ${videopath%.*})"
