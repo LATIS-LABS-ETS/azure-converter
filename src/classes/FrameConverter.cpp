@@ -1,7 +1,10 @@
 // #include<sys/stat.h>
 #include <stdexcept>
 #include <iostream>
+#include <fstream>
 #include <algorithm>
+#include <experimental/filesystem>
+
 
 #include <k4a_util.h>
 #include <FRAMECONVERTER_CONSTANTS.h>
@@ -145,7 +148,7 @@ std::experimental::filesystem::path FrameConverter::_getFileName(const std::stri
     unsigned int fill = std::max(0, (int)(this->_leading - filename.length()));
 
     std::string fullFilePath = "";
-    std::experimental::filesystem::path dirPath = std::experimental::filesystem::path(directory);
+    std::experimental::filesystem::path dirPath = std::experimental::filesystem::path(directory);   
 
     filename.insert(0, fill, '0');
     filename.insert(0, prefix);
@@ -267,9 +270,16 @@ void FrameConverter::setFileNameConventions(
 
 void FrameConverter::extract()
 {
+    std::string droppedFrames = "";
     unsigned int dropped_frames = 0;
     std::experimental::filesystem::path rgbPath;
     std::experimental::filesystem::path depthPath;
+    std::experimental::filesystem::path baseDirectory = std::experimental::filesystem::path(this->_rgbDirectory).parent_path();
+    std::string droppedFramesPath = baseDirectory / "Droppedframes";
+
+    std::cout << " Dropped Frames :: "<< droppedFramesPath << std::endl;
+
+
     k4a_playback_t handle = this->_getHandle();
     FrameAligner faimgs = FrameAligner(handle);
     FrameResult *resultPTR = faimgs.getAlignedFrame(handle, this->_format, false);
@@ -278,41 +288,43 @@ void FrameConverter::extract()
     uint pathLength = this->_mkvPath.length();
     std::string subpath = "..."+this->_mkvPath.substr(pathLength-10, pathLength-1);
 
+    std::ofstream droppedFramesFile;
+
+    resultPTR->frameIndex -= 1;
+
     p.setHeader("Extract and align: {" + subpath + "} ");
     while (resultPTR->hasNextFrame == K4A_STREAM_RESULT_SUCCEEDED)
     {
-         std::stringstream footer;
-        // if (resultPTR->isValidFrame)
-        // {
-        //     this->_save(resultPTR);
-        // }
-        // else
-        // {
-        //     dropped_frames += 1;
-        // }
-        if (!resultPTR->isValidFrame)
-        {
-            dropped_frames += 1;
-        }
-        this->_save(resultPTR);
-
+        std::stringstream footer;
         rgbPath = this->_getFileName(this->_rgbDirectory, resultPTR->nextFrameIndex(), this->_prefixRGB, this->_suffixRGB);
         depthPath = this->_getFileName(this->_depthDirectory, resultPTR->nextFrameIndex(), this->_prefixDEPTH, this->_suffixDEPTH);
         resultPTR = faimgs.getAlignedFrame(handle, this->_format, this->_fileExists(rgbPath) && this->_fileExists(depthPath));
 
-        footer << "[Processed Frames: " << resultPTR->frameIndex << "/" << this->_totalFrames << " <Dropped: " << std::to_string(dropped_frames) << " Frames>]";
+        if (!resultPTR->isValidFrame)
+        {
+            dropped_frames += 1;
+            droppedFrames = droppedFrames.append("\n").append(std::to_string(resultPTR->frameIndex));
+        }
+
+        if(!this->_fileExists(rgbPath) && !this->_fileExists(depthPath)){
+            this->_save(resultPTR);
+        }        
+        footer << "[Extracted : <" << resultPTR->frameIndex << "/" << this->_totalFrames << ">, Dropped: <" << std::to_string(dropped_frames)<< "/" << this->_totalFrames << ">]";
         p.setFooter(footer.str());
         p.update(resultPTR->frameIndex);
+
+        resultPTR->release();
+        
         if (resultPTR->hasNextFrame == K4A_STREAM_RESULT_EOF || resultPTR->nextFrameIndex() >= this->_totalFrames)
         {
             break;
         }
-        // std::cout << resultPTR->hasNextFrame << std::endl;
-        // if(resultPTR->isValidFrame && (resultPTR->frameIndex >= 5)){//For debugging purposes only
-        //     break;
-        // }
     }
     p.finish();
     std::cout << "FINISHED PROCSESING ALL FRAMES " << std::endl;
+    droppedFramesFile.open(droppedFramesPath);
+    droppedFramesFile << droppedFrames;
+    droppedFramesFile.close();
+    
     k4a_playback_close(handle);
 }
