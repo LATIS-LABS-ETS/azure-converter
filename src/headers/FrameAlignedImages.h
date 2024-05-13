@@ -13,6 +13,7 @@ class ImageSet
         k4a_transformation_t transformation = NULL;
     public:
         ImageSet(){};
+        ~ImageSet();
         void ensureRGBAsBGR32();
     private: 
         void _convertImage(k4a_image_t srcImage, k4a_image_t* copyToImagePTR, const unsigned int channels = 4);
@@ -26,7 +27,8 @@ class FrameResult: public ImageSet
         bool isValidFrame  = 0;
         k4a_stream_result_t hasNextFrame = K4A_STREAM_RESULT_SUCCEEDED;
     public:
-        FrameResult() : ImageSet(), frameIndex(0) {};   
+        FrameResult() : ImageSet(), frameIndex(0) {};
+        ~FrameResult();
         void alignImages(const unsigned int format);    
         void release(); 
         unsigned int nextFrameIndex();
@@ -40,6 +42,7 @@ class FrameAligner{
 
     public:
         FrameAligner(k4a_playback_t handle);
+        ~FrameAligner(); 
         FrameResult* getAlignedFrame(k4a_playback_t handle, const unsigned int format, bool skipFrameProcessing);
 };
 

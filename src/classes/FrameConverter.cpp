@@ -17,7 +17,7 @@ FrameConverter::FrameConverter(){
 
 k4a_playback_t FrameConverter::_getHandle()
 {
-    k4a_playback_t handle = NULL;
+    k4a_playback_t handle = nullptr;
     if (k4a_playback_open(this->_mkvPath.c_str(), &handle) != K4A_RESULT_SUCCEEDED)
     {
         std::string message = "Failed to open recording: " + this->_mkvPath;
@@ -276,6 +276,7 @@ void FrameConverter::extract()
     std::experimental::filesystem::path depthPath;
     std::experimental::filesystem::path baseDirectory = std::experimental::filesystem::path(this->_rgbDirectory).parent_path();
     std::string droppedFramesPath = baseDirectory / "Droppedframes";
+    
 
     std::cout << " Dropped Frames :: "<< droppedFramesPath << std::endl;
 
@@ -321,6 +322,7 @@ void FrameConverter::extract()
         }
     }
     p.finish();
+
     std::cout << "FINISHED PROCSESING ALL FRAMES " << std::endl;
     droppedFramesFile.open(droppedFramesPath);
     droppedFramesFile << droppedFrames;

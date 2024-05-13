@@ -79,7 +79,7 @@ int main(const int argc, const char* argv[]){
         .help = "The number of leading zeros to add with frame number when saving",
         .required = false
         });
-    const auto &remaining_arguments = p.parse(argc, argv);
+    p.parse(argc, argv);
 
     FrameConverter f;
     

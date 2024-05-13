@@ -3,6 +3,10 @@ project(AzureConverter)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_BUILD_TYPE RelWithDebInfo)
+
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
 
 find_package(OpenCV REQUIRED)
 find_package(k4a REQUIRED)
@@ -45,11 +49,18 @@ file(GLOB_RECURSE CLASSES src/classes/*.cpp)
 
 add_executable(AzureConverter ${CLASSES} src/kinect.cpp)
 
+
 target_include_directories(AzureConverter PUBLIC src/headers)
 # target_include_directories(AzureConverter PUBLIC src/headers/indicators)
 
+target_link_libraries(AzureConverter Threads::Threads)
 target_link_libraries(AzureConverter argparse)
 target_link_libraries(AzureConverter k4a::k4a)
 target_link_libraries(AzureConverter k4a::k4arecord)
 target_link_libraries(AzureConverter ${OpenCV_LIBS})
 target_link_libraries(${PROJECT_NAME} stdc++fs)#For filesystem utilities
+
+if(CMAKE_BUILD_TYPE MATCHES "RelWithDebInfo")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -fsanitize=undefined -fsanitize=address")
+  target_link_libraries(AzureConverter -fsanitize=undefined -fsanitize=address)
+endif()

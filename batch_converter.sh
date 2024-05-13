@@ -1,22 +1,40 @@
 #!/bin/bash
 cd build
-search_dir=/home/ramsri00/work_data/INPUT_VIDEOS/SPECIFIC-ADULTS-TEST/
+search_dir=/home/ramsri00/work_data/INPUT_VIDEOS/CORRUPTED-ADULT-VIDEOS
 FORMAT=$1
-#echo $FORMAT
-#exit
+OUTPUT_DIR=/home/ramsri00/work_data/CORRUPTED_VIDEOS
+MV_FINISHED_DIR=/home/ramsri00/work_data/INPUT_VIDEOS/FINISHED_CORRUPTED_VIDEOS
+EXPECTED_FILES_COUNT=1797
+
+if [ ! -d "$MV_FINISHED_DIR" ]; then
+    mkdir $MV_FINISHED_DIR
+fi
+
 for videopath in "$search_dir"/*
 do
     filename="$(basename ${videopath%.*})"
     rgbdir=${filename}/RGB
     depthdir=${filename}/DEPTH
     command="./AzureConverter -vpath ${videopath} -format ${FORMAT} --depthdir ${depthdir} --rgbdir ${rgbdir}"
-    tarcommand="tar -cvzf ./${filename}.tar.gz ./${filename}"
+    echo $command
+    tarcommand="tar -czf ./${filename}.tar.gz ./${filename}"
+    mvcommand="mv -f ${filename} $OUTPUT_DIR/"
+    $command
+    numfiles=$(ls $rgbdir -l | grep -v ^d | wc -l)
     echo "$filename"
     echo "$rgbdir"
     echo "$depthdir"
-    $command
-    $tarcommand
-    rm -Rf ./${filename}
+    echo $numfiles
+    if [ $numfiles -gt $EXPECTED_FILES_COUNT ]; then
+        if [ -d "$OUTPUT_DIR/$filename" ]; then
+            rm -rf $OUTPUT_DIR/$filename
+        fi
+        mv $videopath $MV_FINISHED_DIR/$filename.mkv
+        $mvcommand
+    fi
+    # $tarcommand
+    # $mvcommand    
+    # exit
 done
 
 

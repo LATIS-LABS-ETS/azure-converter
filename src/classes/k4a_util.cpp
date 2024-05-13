@@ -44,7 +44,15 @@ namespace k4a
                 // NOTE: this is slower than other formats.
                 std::vector<uint8_t> buffer( src.get_buffer(), src.get_buffer() + src.get_size() );
                 mat = cv::imdecode( buffer, cv::IMREAD_ANYCOLOR );
-                cv::cvtColor( mat, mat, cv::COLOR_BGR2BGRA );
+                try
+                {
+                    cv::cvtColor( mat.clone(), mat, cv::COLOR_BGR2BGRA );
+                }
+                catch(const std::exception& e)
+                {
+                    std::cout << e.what() << std::endl;
+                }
+                
                 break;
             }
             case k4a_image_format_t::K4A_IMAGE_FORMAT_COLOR_NV12:
