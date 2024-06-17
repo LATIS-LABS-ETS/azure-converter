@@ -1,10 +1,10 @@
 #!/bin/bash
 cd build
-search_dir=/home/ramsri00/work_data/INPUT_VIDEOS/CORRUPTED-ADULT-VIDEOS
+search_dir=/home/ramsri00/work_data/INPUT_VIDEOS/Khalil
 FORMAT=$1
-OUTPUT_DIR=/home/ramsri00/work_data/CORRUPTED_VIDEOS
-MV_FINISHED_DIR=/home/ramsri00/work_data/INPUT_VIDEOS/FINISHED_CORRUPTED_VIDEOS
-EXPECTED_FILES_COUNT=1797
+OUTPUT_DIR=/home/ramsri00/work_data/KhalilVideos/Inputs
+MV_FINISHED_DIR=/home/ramsri00/work_data/INPUT_VIDEOS/FinishedKhalil
+EXPECTED_FILES_COUNT=800
 
 if [ ! -d "$MV_FINISHED_DIR" ]; then
     mkdir $MV_FINISHED_DIR

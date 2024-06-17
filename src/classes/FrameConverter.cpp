@@ -294,7 +294,7 @@ void FrameConverter::extract()
     resultPTR->frameIndex -= 1;
 
     p.setHeader("Extract and align: {" + subpath + "} ");
-    while (resultPTR->hasNextFrame == K4A_STREAM_RESULT_SUCCEEDED)
+    while (resultPTR->hasNextFrame == K4A_STREAM_RESULT_SUCCEEDED ||  resultPTR->nextFrameIndex() < this->_totalFrames)
     {
         std::stringstream footer;
         rgbPath = this->_getFileName(this->_rgbDirectory, resultPTR->nextFrameIndex(), this->_prefixRGB, this->_suffixRGB);
@@ -316,8 +316,9 @@ void FrameConverter::extract()
 
         resultPTR->release();
         
-        if (resultPTR->hasNextFrame == K4A_STREAM_RESULT_EOF || resultPTR->nextFrameIndex() >= this->_totalFrames)
+        if (resultPTR->hasNextFrame == K4A_STREAM_RESULT_EOF && resultPTR->nextFrameIndex() >= this->_totalFrames)
         {
+            std::cout<<"END OF STREAM ? "<<(resultPTR->hasNextFrame == K4A_STREAM_RESULT_EOF) << " nextFrameIndex? " << resultPTR->nextFrameIndex()<<" TOTAL FRAMES : "<<this->_totalFrames<<std::endl;
             break;
         }
     }
